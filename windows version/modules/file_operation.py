@@ -1,16 +1,11 @@
 import os 
 import subprocess
 import threading
+import queue
 
 from colorama import Fore
 
-### error startement
-
-def error(message:str) -> None:
-    print(Fore.RED+'[ERROR] '+Fore.WHITE+message)
-    print('\n If you unable to solve the issue. Please report on https://github.com/sourabh945/BizBackup.git/issues \n')
-    exit(1)
-
+from modules.error import error
 
 ### this func is for find the path is exist or not
 
@@ -44,7 +39,7 @@ def indexer(source_path:str,drive_path:str) -> list[list[dir]]:
     source_thread.join()
 
     if (output.empty()):
-        error('Internal error. please report on https://github.com/sourabh945/BizBackup.git/issues : The Multithreading is not working')
+        error('Internal error : The Multithreading is not working')
     while not output.empty():
         name, data = output.get()
         if name == source_path:
@@ -79,7 +74,7 @@ def make_dirs(path:str,list:list) -> list[dict]:
 ### and this function the return the dict which have additional two key values drive_path and drive_name
 
 def get_new_name(item:dict) -> dict:
-    additional_string = f'_({item['ModTime'][0:list(item['ModTime']).index('.',-1)]})'
+    additional_string = f"_({item['ModTime'][0:list(item['ModTime']).index('.',-1)]})"
     drive_path = item['Path'][0:list(item['Path']).index('.',-1)]+additional_string+item['Path'][list(item['Path']).index('.',-1):]
     drive_name = item['Name'][0:list(item['Name']).index('.',-1)]+additional_string+item['Name'][list(item['Name']).index('.',-1):]
     item['Drive_Path'] = drive_path

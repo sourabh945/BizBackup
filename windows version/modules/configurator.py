@@ -4,6 +4,7 @@ from colorama import Fore
 ### module imports
 
 from modules.file_operation import error
+from modules.utils import list_remote
 
 ### configuration file reader for paths 
 
@@ -27,3 +28,5 @@ def configurator() -> list[str,str]:
         drive_path = config.get('folders','drive_path')
 
     return drive_path , source_path
+
+
