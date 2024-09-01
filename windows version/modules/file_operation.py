@@ -1,7 +1,5 @@
 import os 
-import subprocess
-import threading
-import queue
+
 
 from colorama import Fore
 
@@ -13,51 +11,6 @@ def check_paths(path:str) -> None:
     if os.path.isdir(path) is False:
         print('\n'+Fore.RED+'[ERROR] '+Fore.WHITE+'[{path}] is not found in filesystem')
         exit(1)
-
-### this function index the given path and return into json 
-
-def _indexer(path:str,output_queue:queue) -> None:
-    output = subprocess.run(['rlcone','lsjson','-R',path],capture_output=True,text=True)
-    output_queue.put((path,output))
-
-### this function uses multithreading to get the indexing from _indexder funcion 
-
-def indexer(source_path:str,drive_path:str) -> list[list[dir]]:
-
-    check_paths(source_path)
-    check_paths(drive_path)
-
-    output = queue.Queue()
-
-    source_thread = threading.Thread(target=_indexer,args=(source_path,output))
-    drive_thread = threading.Thread(target=_indexer,args=(drive_path,output))
-
-    drive_thread.start() 
-    source_thread.start()
-
-    drive_thread.join()
-    source_thread.join()
-
-    if (output.empty()):
-        error('Internal error : The Multithreading is not working')
-    while not output.empty():
-        name, data = output.get()
-        if name == source_path:
-            source_data = data 
-        else:
-            drive_data = data
-    
-    if source_data.returncode == 0 :
-        source_list = source_data.stdout
-    else:
-        error(source_data.stderr)
-
-    if drive_data.returncode == 0 :
-        drive_list = drive_data.stdout
-    else:
-        error(drive_data.stderr)
-
-    return source_list,drive_list
 
 ### this function make folder in the drive and local system
 

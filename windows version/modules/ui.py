@@ -3,7 +3,7 @@ from tkinter import filedialog , messagebox
 ### modules imports 
 
 from modules.file_operation import error
-from modules.utils import list_remote
+from modules.utils import remote_list
 
 def select_folder():
     try:
@@ -23,7 +23,7 @@ import tkinter as tk
 def select_drive() -> str:
     """This function is for select the which rclone drive you wanted to used"""
     while True:
-        remotes = list_remote()
+        remotes = remote_list()
         print('\nList of the remotes stores on the computer')
         for i , remote in enumerate(remotes):
             print(f'[{i}]  {remote}')
