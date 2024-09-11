@@ -1,7 +1,9 @@
-from modules.configurator import configurator
+
 from modules.f_ops import *
 from modules.error import error
 from modules.utils import *
+
+from modules.configurator import configurator
 
 def drive_check(drive_path:str):
     remote = drive_path.split(":")[0]
@@ -13,7 +15,7 @@ def cal_size(list:list[dict]) -> float:
     size = 0
     for item in list:
         size += item['Size']
-    return item/(1024*1024)
+    return size/(1024*1024)
 
 
 if __name__ == "__main__":
@@ -35,6 +37,7 @@ if __name__ == "__main__":
     print('[ Complete ] Indexing')
 
     print(f"\nTotal file in local : {len(source_list)}\nToal file in remote : {len(drive_list)}\n")
+
 
     is_empty_local = is_empty(source_list)
     is_empty_remote = is_empty(drive_list)
@@ -70,6 +73,11 @@ if __name__ == "__main__":
         else:
             print('Cancelling all...')
             exit(0)
+
+
+    elif is_empty_local and is_empty_remote:
+        print(f'\nBoth local {source_path} and remote {drive_path} are empty\n')
+        exit(0)
 
     else:
 
