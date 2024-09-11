@@ -19,16 +19,16 @@ from modules.error import error
 
 ### this function is for launch the sub process 
 
-def run_cmd(command,input:str=None,shell:bool=False) -> subprocess.CompletedProcess:
+def run_cmd(command,input:str=None,shell:bool=False,capture_output:bool=True) -> subprocess.CompletedProcess:
     if type(command) == type(str()):
         cmd = [x for x in command.split(' ') if x != ' ' and x != ""]
     elif type(command) == type(list()):
         cmd = command
     try:
         if input:
-            return subprocess.run(cmd,input=input,capture_output=True,text=True,shell=shell)
+            return subprocess.run(cmd,input=input,capture_output=capture_oumain.pytput,text=True,shell=shell)
         else:
-            return subprocess.run(cmd,capture_output=True,text=True,shell=shell) 
+            return subprocess.run(cmd,capture_output=capture_output,text=True,shell=shell) 
     except Exception as err:
         error('Unable to run the cmd please see the output below for debug.')
         print(f'\n[Output] {err}')
@@ -171,7 +171,7 @@ def download_file(file_path:str,path_in_remote:str) -> bool:
 
 def sync_remote(backup_folder_path:str,remote_backup_folder_path:str) -> bool:
     """note: that this function make a copy of the current backup folder content but it delete all the old file in the remote"""
-    output = (run_cmd(['rclone','sync',backup_folder_path,remote_backup_folder_path,'--progress','--stats']))
+    output = (run_cmd(['rclone','sync',backup_folder_path,remote_backup_folder_path,'--progress'],capture_output=False))
     value = True if output.returncode == 0 else False
     if value == False:
         print(output.stderr)
@@ -181,7 +181,7 @@ def sync_remote(backup_folder_path:str,remote_backup_folder_path:str) -> bool:
 
 def sync_local(backup_folder_path:str,remote_backup_folder_path:str) -> bool:
     """note: that this function make a copy of the current backup folder content but it delete all the old file in the remote"""
-    output = (run_cmd(['rclone','sync',remote_backup_folder_path,backup_folder_path,'--progress','--stats']))
+    output = (run_cmd(['rclone','sync',remote_backup_folder_path,backup_folder_path,'--progress'],capture_output=False))
     value = True if output.returncode == 0 else False
     if value == False:
         print(output.stderr)
