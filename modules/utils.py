@@ -3,6 +3,7 @@ import os
 import threading
 import queue
 import multiprocessing as mp
+import json
 
 from tqdm import tqdm
 
@@ -70,8 +71,21 @@ def generate_remote():
         error('Rclone is not installed. Please install it. Use "winget install rclone" in windows and "sudo apt/dnf/pacman install rclone" in linux distros')
 
 
+def get_folders(remote_path:str) -> list:
+    output = run_cmd(f'rclone lsd {remote_path}')
+    if output.returncode != 0 :
+        error(output.stderr)
+    return [ (i.split('-1')[-1]).lstrip() for i in (output.stdout).split('\n') if i != ""]
 
-
+def approcach_remote(remote_path:str) -> bool:
+    output = (run_cmd(f'rclone lsd {remote_path}'))
+    value = output.returncode
+    if value == 0 :
+        return True
+    elif value == 3:
+        return False
+    else:
+        error(output.stderr)
 
 """-----------------------------------------------------------------------------------------------------------------------------------"""
 
@@ -82,7 +96,7 @@ def generate_remote():
 ### this function index the given path and return into json 
 
 def _indexer(path:str,output_queue:queue) -> None:
-    output = subprocess.run(['rlcone','lsjson','-R',path],capture_output=True,text=True)
+    output = subprocess.run(['rclone','lsjson','-R',path],capture_output=True,text=True)
     output_queue.put((path,output))
 
 ### this function uses multithreading to get the indexing from _indexder funcion 
@@ -110,12 +124,12 @@ def indexer(source_path:str,drive_path:str) -> list[list[dir]]:
             drive_data = data
     
     if source_data.returncode == 0 :
-        source_list = source_data.stdout
+        source_list = json.loads(source_data.stdout)
     else:
         error(source_data.stderr)
 
     if drive_data.returncode == 0 :
-        drive_list = drive_data.stdout
+        drive_list = json.loads(drive_data.stdout)
     else:
         error(drive_data.stderr)
 
@@ -157,7 +171,7 @@ def download_file(file_path:str,path_in_remote:str) -> bool:
 
 def sync_remote(backup_folder_path:str,remote_backup_folder_path:str) -> bool:
     """note: that this function make a copy of the current backup folder content but it delete all the old file in the remote"""
-    output = (run_cmd(['rclone','sync',backup_folder_path,remote_backup_folder_path,'--progress']))
+    output = (run_cmd(['rclone','sync',backup_folder_path,remote_backup_folder_path,'--progress','--stats']))
     value = True if output.returncode == 0 else False
     if value == False:
         print(output.stderr)
@@ -167,7 +181,7 @@ def sync_remote(backup_folder_path:str,remote_backup_folder_path:str) -> bool:
 
 def sync_local(backup_folder_path:str,remote_backup_folder_path:str) -> bool:
     """note: that this function make a copy of the current backup folder content but it delete all the old file in the remote"""
-    output = (run_cmd(['rclone','sync',remote_backup_folder_path,backup_folder_path,'--progress']))
+    output = (run_cmd(['rclone','sync',remote_backup_folder_path,backup_folder_path,'--progress','--stats']))
     value = True if output.returncode == 0 else False
     if value == False:
         print(output.stderr)
