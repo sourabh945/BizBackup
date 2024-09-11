@@ -148,10 +148,10 @@ def indexer(source_path:str,drive_path:str) -> list[list[dir]]:
 ### this function is use for upload the files to remote
 
 def upload_file(file_path:str,path_in_remote:str) -> bool:
-    print(f'[ Uploading ] {file_path}')
-    value = True if (run_cmd(['rclone','copyto',path_in_remote,file_path,'--ignore-checksum', '--ignore-size', '--ignore-times', '--immutable', '--metadata', '--no-check-dest'])).returncode == 0 else False
+    print(f'[ Uploading ] {file_path} --> {path_in_remote}')
+    value = True if (run_cmd(['rclone','copyto',file_path,path_in_remote,'--ignore-checksum', '--ignore-size', '--ignore-times', '--immutable', '--metadata', '--no-check-dest'],capture_output=False)).returncode == 0 else False
     if value == True:
-        print(f'[ Done ] {file_path} ')
+        print(f'[ Done ] {file_path}')
     else:
         print(f'[ Fail ] {file_path} ')
     return value 
@@ -159,10 +159,10 @@ def upload_file(file_path:str,path_in_remote:str) -> bool:
 ### this function is for download the file from the remote
 
 def download_file(file_path:str,path_in_remote:str) -> bool:
-    print(f'[ Downloading ] {path_in_remote}')
-    value =  True if (run_cmd(['rclone','copyto',path_in_remote,file_path,'--ignore-checksum', '--ignore-size', '--ignore-times', '--immutable', '--metadata', '--no-check-dest'])).returncode == 0 else False
+    print(f'[ Downloading ] {path_in_remote} --> {file_path}')
+    value =  True if (run_cmd(['rclone','copyto',path_in_remote,file_path,'--ignore-checksum', '--ignore-size', '--ignore-times', '--immutable', '--metadata', '--no-check-dest'],capture_output=False)).returncode == 0 else False
     if value == True:
-        print(f'[ Done ] {path_in_remote}')
+        print(f'[ Done ] {path_in_remote} ')
     else:
         print(f'[ Fail ] {path_in_remote}')
     return value
@@ -210,7 +210,7 @@ def runner(func,file_list:list[dict],local_base:str,remote_base:str) -> list:
         bar = tqdm(total=len(file_list),desc=' [ Task Progress ] ')
         for file in file_list:
             result = pool.apply_async(_runner,args=(func,file,local_base,remote_base))
-            bar.update()
+            bar.update(1)
             if not result:
                 fails.append(file)
         pool.close()

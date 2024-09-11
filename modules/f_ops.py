@@ -36,20 +36,21 @@ def get_sorted(source_list:list[dict],drive_list:list[dict]) -> list[list[dict]]
     upload_dict = {}
 
     for item in drive_list:
-        drive_set.add((item["Path"],item["Name"],item["Size"],item["ModTime"],item["IsDir"]))
+        drive_set.add((item["Path"],item["Name"],item["Size"],item["ModTime"].split(".")[0],item["IsDir"]))
 
     while source_list != [] : 
         item = source_list.pop(0)
         if item['IsDir'] is not True:
-            if (item["Path"],item["Name"],item["Size"],item["ModTime"],item["IsDir"]) in drive_set:
-                drive_set.remove((item["Path"],item["Name"],item["Size"],item["ModTime"],item["IsDir"]))
+            time = (item['ModTime']).split(".")[0] 
+            if (item["Path"],item["Name"],item["Size"],time,item["IsDir"]) in drive_set:
+                drive_set.remove((item["Path"],item["Name"],item["Size"],time,item["IsDir"]))
             else:
                 upload_dict[item['Path']] = item 
                 upload_size += item['Size']
 
     for item in drive_set:
         if item[4] is False:
-            if item[0] in upload_dict:
+            if item[0] in upload_dict.keys():
                 upload_dict[item[0]] = get_new_name(upload_dict[item[0]])
                 modified_files += 1
             else:
