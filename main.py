@@ -17,6 +17,13 @@ def cal_size(list:list[dict]) -> float:
         size += item['Size']
     return size/(1024*1024)
 
+def length(list:list[dict]) -> int:
+    count = 0 
+    for item in list:
+        if item['IsDir'] is False:
+            count += 1
+    return count 
+
 
 if __name__ == "__main__":
 
@@ -36,7 +43,7 @@ if __name__ == "__main__":
 
     print('[ Complete ] Indexing')
 
-    print(f"\nTotal file in local : {len(source_list)}\nToal file in remote : {len(drive_list)}\n")
+    print(f"\nTotal file in local : {length(source_list)}\nToal file in remote : {length(drive_list)}\n")
 
 
     is_empty_local = is_empty(source_list)
@@ -89,13 +96,11 @@ if __name__ == "__main__":
 
         print('[ Result ]')
 
-
-
         print("Number of new created files in local : ",len(upload_list)-modified_files,"\n")
 
         print("Number of modified files  in local : ",modified_files,"\n")
 
-        print("Number of deleted files in local : ",len(download_list,'\n'))
+        print("Number of deleted files in local : ",len(download_list),'\n')
 
         print(f'Size of total upload : {upload_size/(1024*1024)} MB \n')
 

@@ -206,7 +206,7 @@ def _runner(func,file:dict,local_base:str,remote_base:str) -> None:
 def runner(func,file_list:list[dict],local_base:str,remote_base:str) -> list:
     print("\n Process is started")
     fails = []
-    with mp.Pool(processes=2*mp.cpu_count+1) as pool:
+    with mp.Pool(processes=2*mp.cpu_count()+1) as pool:
         bar = tqdm(total=len(file_list),desc=' [ Task Progress ] ')
         for file in file_list:
             result = pool.apply_async(_runner,args=(func,file,local_base,remote_base))

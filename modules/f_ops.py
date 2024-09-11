@@ -15,9 +15,9 @@ def check_paths(path:str) -> None:
 ### and this function the return the dict which have additional two key values drive_path and drive_name
 
 def get_new_name(item:dict) -> dict:
-    additional_string = f"_({item['ModTime'][0:list(item['ModTime']).index('.',-1)]})"
-    drive_path = item['Path'][0:list(item['Path']).index('.',-1)]+additional_string+item['Path'][list(item['Path']).index('.',-1):]
-    drive_name = item['Name'][0:list(item['Name']).index('.',-1)]+additional_string+item['Name'][list(item['Name']).index('.',-1):]
+    additional_string = f"_({(item['ModTime'])[0:list(item['ModTime']).index('.')]})"
+    drive_path = item['Path'][0:list(item['Path']).index('.')]+additional_string+item['Path'][list(item['Path']).index('.'):]
+    drive_name = item['Name'][0:list(item['Name']).index('.')]+additional_string+item['Name'][list(item['Name']).index('.'):]
     item['Drive_Path'] = drive_path
     item['Drive_Name'] = drive_name
     return item
@@ -35,7 +35,7 @@ def get_sorted(source_list:list[dict],drive_list:list[dict]) -> list[list[dict]]
     drive_set = set() 
     upload_dict = {}
 
-    for i in drive_list:
+    for item in drive_list:
         drive_set.add((item["Path"],item["Name"],item["Size"],item["ModTime"],item["IsDir"]))
 
     while source_list != [] : 
@@ -48,12 +48,13 @@ def get_sorted(source_list:list[dict],drive_list:list[dict]) -> list[list[dict]]
                 upload_size += item['Size']
 
     for item in drive_set:
-        if item[0] in upload_dict:
-            upload_dict[item[0]] = get_new_name(upload_dict[item[0]])
-            modified_files += 1
-        else:
-            download_list.append({"Path": item[0],"Name": item[1],"Size": item[2],"ModTime": item[3],"IsDir": item[4]})
-            download_size += item[2]
+        if item[4] is False:
+            if item[0] in upload_dict:
+                upload_dict[item[0]] = get_new_name(upload_dict[item[0]])
+                modified_files += 1
+            else:
+                download_list.append({"Path": item[0],"Name": item[1],"Size": item[2],"ModTime": item[3],"IsDir": item[4]})
+                download_size += item[2]
     
     return list(upload_dict.values()) , download_list , upload_size , download_size , modified_files
 
