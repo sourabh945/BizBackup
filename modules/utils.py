@@ -5,8 +5,6 @@ import queue
 import multiprocessing as mp
 import json
 
-from tqdm import tqdm
-
 
 ### modules imports #######################
 
@@ -26,7 +24,7 @@ def run_cmd(command,input:str=None,shell:bool=False,capture_output:bool=True) ->
         cmd = command
     try:
         if input:
-            return subprocess.run(cmd,input=input,capture_output=capture_oumain.pytput,text=True,shell=shell)
+            return subprocess.run(cmd,input=input,capture_output=capture_output,text=True,shell=shell)
         else:
             return subprocess.run(cmd,capture_output=capture_output,text=True,shell=shell) 
     except Exception as err:
@@ -207,13 +205,10 @@ def runner(func,file_list:list[dict],local_base:str,remote_base:str) -> list:
     print("\n Process is started")
     fails = []
     with mp.Pool(processes=2*mp.cpu_count()+1) as pool:
-        bar = tqdm(total=len(file_list),desc=' [ Task Progress ] ')
         for file in file_list:
             result = pool.apply_async(_runner,args=(func,file,local_base,remote_base))
-            bar.update(1)
             if not result:
                 fails.append(file)
         pool.close()
         pool.join()
-        bar.close()
     return fails

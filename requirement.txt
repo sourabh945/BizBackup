@@ -1,3 +1,2 @@
 colorma
 configparser
-tqdm
