@@ -1,15 +1,11 @@
+import asyncio
+
 
 from modules.f_ops import *
 from modules.error import error
 from modules.utils import *
 
-from modules.configurator import configurator
-
-def drive_check(drive_path:str):
-    remote = drive_path.split(":")[0]
-    remote += ":" 
-    if remote not in remote_list():
-        error(f'{remote} not in exists.')
+from modules.configurator import configurator,advance_config_loader
 
 def cal_size(list:list[dict]) -> float:
     size = 0
@@ -31,9 +27,8 @@ if __name__ == "__main__":
 
     drive_path , source_path = configurator()
 
-    check_paths(source_path)
+    logs_path , fails_path , sleep_time = advance_config_loader()
 
-    drive_check(drive_path)
 
     print(f"[ Output ] src: {source_path} remote: {drive_path}")
 
@@ -94,6 +89,10 @@ if __name__ == "__main__":
 
         print('[ Complete ] Sorting')
 
+        if not upload_list and not download_list :
+            print("\nEverything is up-to-date\n")
+            exit(0)
+
         print('[ Result ]')
 
         print("Number of new created files in local : ",len(upload_list)-modified_files,"\n")
@@ -115,7 +114,7 @@ if __name__ == "__main__":
             print('Cancelling all ...')
             exit(0)
         elif option == 1:
-            fails = runner(upload_file,upload_list,source_path,drive_path)
+            fails = asyncio.run(uploader(upload_list,source_path,drive_path,))
             if len(fails) == 0 :
                 print('[ Complete ] uploading...')
                 exit(0)

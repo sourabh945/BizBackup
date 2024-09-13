@@ -1,5 +1,7 @@
 import os
 
+import configparser
+
 ### module imports
 
 from modules.error import error
@@ -21,11 +23,9 @@ def checks(source_path:str,drive_path:str):
 
 def configurator() -> list[str,str]:
 
-    import configparser
-
     config = configparser.ConfigParser()
 
-    if 'config.ini' not in os.listdir('./'):
+    if 'config.ini' not in os.listdir('./configurations/'):
 
         print('The configuration file is not find !!!')
         print('Please enter the path details for installation')
@@ -37,11 +37,11 @@ def configurator() -> list[str,str]:
 
         checks(source_path,drive_path)
 
-        with open('config.ini','w') as file:
+        with open('./configurations/config.ini','w') as file:
             config['folders'] = {'drive_path':drive_path,'source_path':source_path}
             config.write(file)
     else:
-        config.read('./config.ini')
+        config.read('./configurations/config.ini')
         source_path = config.get('folders','source_path')
         drive_path = config.get('folders','drive_path')
 
@@ -50,3 +50,22 @@ def configurator() -> list[str,str]:
     return drive_path , source_path
 
 
+"""------------------------------------------------------------------------------------------------------------------------------------"""
+
+def advance_config_loader() -> list:
+    "log file path , fails path file , sleep time"
+
+    config = configparser.ConfigParser()
+
+    if 'advance.ini' not in os.listdir('./configurations/'):
+
+        with open('./configurations/advance.ini','w') as file:
+            config['folders'] = {'logs_file_path':'./logs.txt','fails_file_path':'./fails.txt'}
+            config['time'] = {'sleep_time':2}
+            config.write(file)
+
+        return './logs.txt' , './fails.txt' , 2
+
+    else:
+        config.read('./configurations/advance.ini')
+        return config.get('folders','logs_file_path'),config.get('folders','fails_file_path'),config.get('time','sleep_time')

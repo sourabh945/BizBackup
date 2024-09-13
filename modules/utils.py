@@ -4,7 +4,8 @@ import threading
 import queue
 import multiprocessing as mp
 import json
-
+import asyncio
+from datetime import datetime as dt
 
 ### modules imports #######################
 
@@ -35,6 +36,21 @@ def run_cmd(command,input:str=None,shell:bool=False,capture_output:bool=True) ->
         
 def initiate_cmd(command:str):
     return os.system(command)
+
+
+"""-----------------------------------------------------------------------------------------------------------------------------------"""
+
+def output_script_finder() -> str:
+
+    shell = os.getenv('SHELL')
+    if shell and 'bash' in shell:
+        return './scripts/output.sh'
+    elif 'pwsh' in os.getenv('_'):
+        return './scripts/output.ps1'
+    elif os.getenv('ComSpec') and 'cmd' in os.getenv('ComSpec'):
+        return './scripts/output.bat'
+    else:
+        error('The terminal shell is neither bash, PowerShell, nor cmd.')
 
 
 """-----------------------------------------------------------------------------------------------------------------------------------"""
@@ -202,7 +218,7 @@ def _runner(func,file:dict,local_base:str,remote_base:str) -> None:
 """ section for run backup command using multiprocessing """
 
 def runner(func,file_list:list[dict],local_base:str,remote_base:str) -> list:
-    print("\n Process is started")
+    print("\n Process is started...")
     fails = []
     with mp.Pool(processes=2*mp.cpu_count()+1) as pool:
         for file in file_list:
@@ -212,3 +228,31 @@ def runner(func,file_list:list[dict],local_base:str,remote_base:str) -> list:
         pool.close()
         pool.join()
     return fails
+
+""" section for upload files function using asyncio for the uploads with 2 seconds wait """
+
+async def _uploader(file_path:str,path_in_remote:str,output_file:str,sleep_time:float=2,logs_path:str='./logs.txt',fails_path:str='./fails.txt') -> asyncio.coroutines:
+    print(f'\n[ Uploading ] {file_path} --> {path_in_remote}')
+    process = await asyncio.create_subprocess_shell(f'rclone copyto {file_path} {path_in_remote} --ignore-checksum --ignore-size --ignore-times --immutable --metadata --no-check-dest ; code=$(echo $?) ; {output_file} {file_path} {path_in_remote} {logs_path} {fails_path} $code')
+    await asyncio.sleep(sleep_time)
+    return process
+
+
+async def uploader(file_list:list[dict],local_base:str,remote_base:str,output_file:str,sleep_time:float=2) -> list[str]:
+    print(f'[ Start ] Uploading... ')
+    tasks = []
+    os.system(f'echo "------------------------------------------------------------------" >> ./logs.txt; echo "Date : {dt.now()}" >> ./logs.txt ; echo "" >> ./logs.txt')
+    for file in file_list:
+        if file.get('Drive_Path'):
+            drive_path = remote_base+file['Drive_Path']
+        else:
+            drive_path = remote_base+file['Path']
+        file_path = local_base + file['Path']
+        tasks.apped(await _uploader(file_path,drive_path,output_file,sleep_time))
+    for task in tasks:
+        await task.wait()
+    try:
+        with open('./fails.txt') as file:
+            return file.readlines()
+    except:
+        return []

@@ -1,5 +1,19 @@
 import os 
 
+################################################ time function ###
+
+from datetime import datetime, timezone, timedelta
+
+def convert_to_utc(time_str):
+    # Parse the input string with its timezone info
+    dt = datetime.strptime(time_str, "%Y-%m-%dT%H:%M:%S.%f%z")
+    
+    # Convert to UTC
+    dt_utc = dt.astimezone(timezone.utc)
+    
+    # Format to the required output
+    return dt_utc.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + 'Z'
+
 ### modules imports #####################
 
 from modules.error import error
@@ -36,12 +50,12 @@ def get_sorted(source_list:list[dict],drive_list:list[dict]) -> list[list[dict]]
     upload_dict = {}
 
     for item in drive_list:
-        drive_set.add((item["Path"],item["Name"],item["Size"],item["ModTime"].split(".")[0],item["IsDir"]))
+        drive_set.add((item["Path"],item["Name"],item["Size"],item['ModTime'],item["IsDir"]))
 
     while source_list != [] : 
         item = source_list.pop(0)
         if item['IsDir'] is not True:
-            time = (item['ModTime']).split(".")[0] 
+            time = convert_to_utc(item['ModTime'])
             if (item["Path"],item["Name"],item["Size"],time,item["IsDir"]) in drive_set:
                 drive_set.remove((item["Path"],item["Name"],item["Size"],time,item["IsDir"]))
             else:
