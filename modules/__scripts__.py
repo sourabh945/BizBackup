@@ -1,7 +1,8 @@
+base = '.'
 
 ### scripts paths 
 
-Paths = {'upload_bash':'./scripts/uploader.sh','upload_ps':'./scripts/uploader.ps1','download_bash':'./scripts/downloader.sh','download_ps':'./scripts/downloader.ps1'}
+Paths = {'upload_bash':base+'/scripts/uploader.sh','upload_ps':base+'/scripts/uploader.ps1','download_bash':base+'/scripts/downloader.sh','download_ps':base+'/scripts/downloader.ps1'}
 
 
 ### scripts 

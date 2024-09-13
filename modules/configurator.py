@@ -10,11 +10,9 @@ from modules.ui import select_folder , select_drive , select_remote_folder
 from modules.f_ops import check_paths
 from modules.utils import approcach_remote
 
-from modules.__scripts__ import scripts,Paths
+from modules.__scripts__ import scripts,Paths,base
 
 ########################################
-
-base = "."
 
 ###########################################
 

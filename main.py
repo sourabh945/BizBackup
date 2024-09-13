@@ -152,6 +152,7 @@ if __name__ == "__main__":
         elif option == 3:
             if input("[ Caution ] Modified file are reverted in local. if yes enter 'y' and for no enter 'n' ").lower() == 'y':
                 output_file = script_finder('upload')
+                print(output_file)
                 fails = asyncio.run(uploader(upload_list,source_path,drive_path,output_file,sleep_time,logs_path,fails_path))
                 if len(fails) == 0 :
                     print('[ Complete ] uploading...')
