@@ -5,11 +5,15 @@ import os
 from datetime import datetime, timezone, timedelta
 
 def convert_to_utc(time_str):
+
+
+    truncated_time_str = time_str[:26] + time_str[29:]  # Remove last three digits of fractional seconds part
+
     # Parse the input string with its timezone info
-    dt = datetime.strptime(time_str, "%Y-%m-%dT%H:%M:%S.%f%z")
+    dta = datetime.strptime(truncated_time_str, "%Y-%m-%dT%H:%M:%S.%f%z")
     
     # Convert to UTC
-    dt_utc = dt.astimezone(timezone.utc)
+    dt_utc = dta.astimezone(timezone.utc)
     
     # Format to the required output
     return dt_utc.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + 'Z'

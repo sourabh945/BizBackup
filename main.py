@@ -114,14 +114,15 @@ if __name__ == "__main__":
             print('Cancelling all ...')
             exit(0)
         elif option == 1:
-            fails = asyncio.run(uploader(upload_list,source_path,drive_path,))
+            output_file = output_script_finder()
+            fails = asyncio.run(uploader(upload_list,source_path,drive_path,output_file,sleep_time,logs_path,fails_path))
             if len(fails) == 0 :
                 print('[ Complete ] uploading...')
                 exit(0)
             else:
                 print("File don't get uploades ")
                 for item in fails:
-                    print(item['Path'])
+                    print(item)
                 exit(1)
         elif option == 2:
             fails = runner(download_file,download_list,source_path,drive_path)
@@ -136,13 +137,13 @@ if __name__ == "__main__":
         
         elif option == 3:
             if input("[ Caution ] Modified file are reverted in local. if yes enter 'y' and for no enter 'n' ").lower() == 'y':
-                fails = runner(upload_file,upload_list,source_path,drive_path)
+                fails = asyncio.run(uploader(upload_list,source_path,drive_path,sleep_time,logs_path,fails_path))
                 if len(fails) == 0 :
                     print('[ Complete ] uploading...')
                 else:
                     print("File don't get uploades ")
                     for item in fails:
-                        print(item['Path'])
+                        print(item)
                     exit(1)
                 fails = runner(download_file,download_list,source_path,drive_path)
                 if len(fails) == 0 :

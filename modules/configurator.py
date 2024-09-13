@@ -60,7 +60,7 @@ def advance_config_loader() -> list:
     if 'advance.ini' not in os.listdir('./configurations/'):
 
         with open('./configurations/advance.ini','w') as file:
-            config['folders'] = {'logs_file_path':'./logs.txt','fails_file_path':'./fails.txt'}
+            config['folders'] = {'logs_file_path':'./logs/logs.txt','fails_file_path':'./logs/fails.txt'}
             config['time'] = {'sleep_time':2}
             config.write(file)
 
@@ -68,4 +68,4 @@ def advance_config_loader() -> list:
 
     else:
         config.read('./configurations/advance.ini')
-        return config.get('folders','logs_file_path'),config.get('folders','fails_file_path'),config.get('time','sleep_time')
+        return config.get('folders','logs_file_path'),config.get('folders','fails_file_path'),float(config.get('time','sleep_time'))

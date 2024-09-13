@@ -6,7 +6,7 @@ if [ $3 -eq 0 ]; then
 
     echo "[ Done ] $1 -----> $2"
 
-    echo "[ Done ] $1 -----> $2" >> "$4"
+    echo "[ Uploading ] [ Done ] $1 -----> $2" >> "$4"
 
 else
 
@@ -14,7 +14,7 @@ else
 
     echo "[ Fail ] $1 --X--> $2" 
 
-    echo "[ Fail ] $1 --X--> $2" >> "$4"
+    echo "[ Uploading ] [ Fail ] $1 --X--> $2" >> "$4"
 
     echo "$1 --X--> $2" >> "$5"
 

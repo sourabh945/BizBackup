@@ -197,6 +197,7 @@ def sync_local(backup_folder_path:str,remote_backup_folder_path:str) -> bool:
     """note: that this function make a copy of the current backup folder content but it delete all the old file in the remote"""
     output = (run_cmd(['rclone','sync',remote_backup_folder_path,backup_folder_path,'--progress'],capture_output=False))
     value = True if output.returncode == 0 else False
+
     if value == False:
         print(output.stderr)
     return value
@@ -233,26 +234,26 @@ def runner(func,file_list:list[dict],local_base:str,remote_base:str) -> list:
 
 async def _uploader(file_path:str,path_in_remote:str,output_file:str,sleep_time:float=2,logs_path:str='./logs.txt',fails_path:str='./fails.txt') -> asyncio.coroutines:
     print(f'\n[ Uploading ] {file_path} --> {path_in_remote}')
-    process = await asyncio.create_subprocess_shell(f'rclone copyto {file_path} {path_in_remote} --ignore-checksum --ignore-size --ignore-times --immutable --metadata --no-check-dest ; code=$(echo $?) ; {output_file} {file_path} {path_in_remote} {logs_path} {fails_path} $code')
+    process = await asyncio.create_subprocess_shell(f'rclone copyto {file_path} {path_in_remote} --ignore-checksum --ignore-size --ignore-times --immutable --metadata --no-check-dest ; code=$(echo $?) ; "{output_file}" {file_path} {path_in_remote}  $code {logs_path} {fails_path}')
     await asyncio.sleep(sleep_time)
     return process
 
 
-async def uploader(file_list:list[dict],local_base:str,remote_base:str,output_file:str,sleep_time:float=2) -> list[str]:
+async def uploader(file_list:list[dict],local_base:str,remote_base:str,output_file:str,sleep_time:float=2,logs_file:str='./logs.txt',fails_file:str='./fails.txt') -> list[str]:
     print(f'[ Start ] Uploading... ')
     tasks = []
-    os.system(f'echo "------------------------------------------------------------------" >> ./logs.txt; echo "Date : {dt.now()}" >> ./logs.txt ; echo "" >> ./logs.txt')
+    os.system(f'echo "------------------------------------------------------------------" >> "{logs_file}"; echo "Date : {dt.now()}" >> "{logs_file}"; echo "" >> "{logs_file}"')
     for file in file_list:
         if file.get('Drive_Path'):
             drive_path = remote_base+file['Drive_Path']
         else:
             drive_path = remote_base+file['Path']
         file_path = local_base + file['Path']
-        tasks.apped(await _uploader(file_path,drive_path,output_file,sleep_time))
+        tasks.append(await _uploader(file_path,drive_path,output_file,sleep_time,logs_file,fails_file))
     for task in tasks:
         await task.wait()
     try:
-        with open('./fails.txt') as file:
+        with open(fails_file) as file:
             return file.readlines()
     except:
         return []
