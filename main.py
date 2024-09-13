@@ -33,6 +33,7 @@ if __name__ == "__main__":
 
     scripts_writer()
 
+    print('[ Complete ] configurations')
 
     print(f"[ Output ] src: {source_path} remote: {drive_path}")
 
