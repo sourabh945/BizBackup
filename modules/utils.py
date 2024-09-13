@@ -237,7 +237,7 @@ def runner(func,file_list:list[dict],local_base:str,remote_base:str,ouput_file:s
 
 async def _uploader(file_path:str,path_in_remote:str,output_file:str,sleep_time:float=2,logs_path:str='./logs/logs.txt',fails_path:str='./logs/fails.txt') -> asyncio.coroutines:
     print(f'\n[ Uploading ] {file_path} --> {path_in_remote}')
-    process = await asyncio.create_subprocess_shell(f'rclone copyto {file_path} {path_in_remote} --ignore-checksum --ignore-size --ignore-times --immutable --metadata --no-check-dest ; code=$(echo $?) ; "{output_file}" {file_path} {path_in_remote}  $code {logs_path} {fails_path}')
+    process = await asyncio.create_subprocess_shell(f'rclone copyto {file_path} {path_in_remote} --ignore-checksum --ignore-size --ignore-times --immutable --metadata --no-check-dest ; code=($ echo $?) ; "{output_file}" {file_path} {path_in_remote}  $code {logs_path} {fails_path}')
     await asyncio.sleep(sleep_time)
     return process
 
