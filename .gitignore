@@ -2,4 +2,4 @@
 **/__pycache__
 **/backup
 **/data
-**/logs
+**/logs/*.txt
