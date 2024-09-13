@@ -34,6 +34,9 @@ def configurator() -> list[str,str]:
 
     config = configparser.ConfigParser()
 
+    if not os.path.isdir(base+'/configurations/'):
+        os.mkdir(base+'/configurations/')
+
     if 'config.ini' not in os.listdir(base+'/configurations/'):
 
         print('The configuration file is not find !!!')
