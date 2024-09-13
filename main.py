@@ -27,9 +27,13 @@ if __name__ == "__main__":
 
     drive_path , source_path = configurator()
 
-    logs_path , fails_path , sleep_time = advance_config_loader()
+    log_folder , logs_path , fails_path , sleep_time = advance_config_loader()
 
-    log_maker()
+    logs_path = log_folder + "/" + os.path.basename(logs_path)
+
+    fails_path = log_folder + "/" + os.path.basename(fails_path)
+
+    log_maker(log_folder,logs_path,fails_path)
 
     scripts_writer()
 

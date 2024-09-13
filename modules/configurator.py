@@ -62,23 +62,28 @@ def advance_config_loader() -> list:
     if 'advance.ini' not in os.listdir('./configurations/'):
 
         with open('./configurations/advance.ini','w') as file:
-            config['folders'] = {'logs_file_path':'./logs/logs.txt','fails_file_path':'./logs/fails.txt'}
+            config['folders'] = {'log_folder':'./logs','logs_file_path':'./logs/logs.txt','fails_file_path':'./logs/fails.txt'}
             config['time'] = {'sleep_time':2}
             config.write(file)
 
-        return './logs.txt' , './fails.txt' , 2
+        return './logs','./logs/logs.txt' , './logs/fails.txt' , 2
 
     else:
-        config.read('./configurations/advance.ini')
-        return config.get('folders','logs_file_path'),config.get('folders','fails_file_path'),float(config.get('time','sleep_time'))
+        try:
+            config.read('./configurations/advance.ini')
+            return config.get('folders','log_folder'), config.get('folders','logs_file_path'),config.get('folders','fails_file_path'),float(config.get('time','sleep_time'))
+        except Exception as err:
+            error(f'{err}. Please delete the advance.ini the system was create new one.')
     
 
 """----------------------------------------------------------------------------------------------------------------------------------------"""
 
-def log_maker():
-    if 'logs' not in os.listdir('./'):
-        os.mkdir('./logs')
-    
+def log_maker(folder,logs,fails):
+    if not os.path.isdir(folder):
+        os.mkdir(folder)
+        return 0
+    if os.path.isfile(fails):
+        os.remove(fails)
 
 """-------------------------------------------------------------------------------------------------------------------------------------------"""
 
