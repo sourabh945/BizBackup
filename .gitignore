@@ -2,3 +2,5 @@
 **/__pycache__
 **/backup
 **/data
+./logs.txt
+./fails.txt
