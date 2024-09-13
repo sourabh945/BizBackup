@@ -3,9 +3,9 @@ import asyncio
 
 from modules.f_ops import *
 from modules.error import error
-from modules.utils import *
+from modules.utils import runner , uploader, sync_local , sync_remote , script_finder , indexer , download_file
 
-from modules.configurator import configurator,advance_config_loader
+from modules.configurator import *
 
 def cal_size(list:list[dict]) -> float:
     size = 0
@@ -28,6 +28,10 @@ if __name__ == "__main__":
     drive_path , source_path = configurator()
 
     logs_path , fails_path , sleep_time = advance_config_loader()
+
+    log_maker()
+
+    scripts_writer()
 
 
     print(f"[ Output ] src: {source_path} remote: {drive_path}")
@@ -113,8 +117,10 @@ if __name__ == "__main__":
         if option == 4:
             print('Cancelling all ...')
             exit(0)
+
+
         elif option == 1:
-            output_file = output_script_finder()
+            output_file = script_finder('upload')
             fails = asyncio.run(uploader(upload_list,source_path,drive_path,output_file,sleep_time,logs_path,fails_path))
             if len(fails) == 0 :
                 print('[ Complete ] uploading...')
@@ -124,8 +130,11 @@ if __name__ == "__main__":
                 for item in fails:
                     print(item)
                 exit(1)
+
+
         elif option == 2:
-            fails = runner(download_file,download_list,source_path,drive_path)
+            output_file = script_finder('downlaod')
+            fails = runner(download_file,download_list,source_path,drive_path,output_file,logs_path,fails_path)
             if len(fails) == 0 :
                 print('[ Complete ] downloading...')
                 exit(0)
@@ -137,7 +146,8 @@ if __name__ == "__main__":
         
         elif option == 3:
             if input("[ Caution ] Modified file are reverted in local. if yes enter 'y' and for no enter 'n' ").lower() == 'y':
-                fails = asyncio.run(uploader(upload_list,source_path,drive_path,sleep_time,logs_path,fails_path))
+                output_file = script_finder('upload')
+                fails = asyncio.run(uploader(upload_list,source_path,drive_path,output_file,sleep_time,logs_path,fails_path))
                 if len(fails) == 0 :
                     print('[ Complete ] uploading...')
                 else:
@@ -145,7 +155,8 @@ if __name__ == "__main__":
                     for item in fails:
                         print(item)
                     exit(1)
-                fails = runner(download_file,download_list,source_path,drive_path)
+                output_file = script_finder('donwload')
+                fails = runner(download_file,download_list,source_path,drive_path,output_file,logs_path,fails_path)
                 if len(fails) == 0 :
                     print('[ Complete ] downloading...')
                     exit(0)

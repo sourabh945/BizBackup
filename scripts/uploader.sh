@@ -12,10 +12,10 @@ else
 
     echo ""
 
-    echo "[ Fail ] $1 --X--> $2" 
+    echo "[ Fail ] $1 --x--> $2" 
 
-    echo "[ Uploading ] [ Fail ] $1 --X--> $2" >> "$4"
+    echo "[ Uploading ] [ Fail ] $1 --x--> $2" >> "$4"
 
-    echo "$1 --X--> $2" >> "$5"
+    echo "$1 --x--> $2" >> "$5"
 
 fi

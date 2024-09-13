@@ -10,6 +10,8 @@ from modules.ui import select_folder , select_drive , select_remote_folder
 from modules.f_ops import check_paths
 from modules.utils import approcach_remote
 
+from modules.__scripts__ import scripts,Paths
+
 ### configuration file reader for paths 
 
 def checks(source_path:str,drive_path:str):
@@ -69,3 +71,23 @@ def advance_config_loader() -> list:
     else:
         config.read('./configurations/advance.ini')
         return config.get('folders','logs_file_path'),config.get('folders','fails_file_path'),float(config.get('time','sleep_time'))
+    
+
+"""----------------------------------------------------------------------------------------------------------------------------------------"""
+
+def log_maker():
+    if 'logs' not in os.listdir('./'):
+        os.mkdir('./logs')
+    
+
+"""-------------------------------------------------------------------------------------------------------------------------------------------"""
+
+
+def scripts_writer():
+    os.mkdir('./scripts')
+    folder_content = os.listdir('./scripts')
+    for script_name in Paths.keys():
+        if os.path.basename(Paths[script_name]) not in folder_content:
+            file = open(Paths[script_name],'w') 
+            file.write(scripts[script_name])
+            file.close()
