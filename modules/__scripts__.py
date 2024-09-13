@@ -46,13 +46,13 @@ else {
 # script for download logging in linux 
 'download_bash' : """#!/bin/bash
 
-if [ $1 -eq 0 ]; then
+if [ $3 -eq 0 ]; then
 
-    echo "[ Downloading ] [ Done ] $2 <---- $3" >> "$4"
+    echo "[ Downloading ] [ Done ] $1 <---- $2" >> "$4"
 
 else
 
-    echo echo "[ Downloading ] [ Fail ] $2 <--x-- $3" >> "$4"
+    echo echo "[ Downloading ] [ Fail ] $1 <--x-- $2" >> "$4"
 
     echo "$1 <--x-- $2" >> "$5"
 

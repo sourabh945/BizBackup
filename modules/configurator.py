@@ -84,10 +84,11 @@ def log_maker():
 
 
 def scripts_writer():
-    os.mkdir('./scripts')
+    if 'scripts' not in os.listdir('./') : os.mkdir('./scripts/')
     folder_content = os.listdir('./scripts')
     for script_name in Paths.keys():
         if os.path.basename(Paths[script_name]) not in folder_content:
             file = open(Paths[script_name],'w') 
             file.write(scripts[script_name])
             file.close()
+        os.system(f'chmod +x "{Paths[script_name]}"')
