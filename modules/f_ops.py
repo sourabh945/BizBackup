@@ -54,7 +54,7 @@ def get_sorted(source_list:list[dict],drive_list:list[dict]) -> list[list[dict]]
 
     def without_time(string:str) -> str:
         path , ext = os.path.splitext(string)
-        path = path[0:len(path) - 22]
+        path = path[0:len(path) - 28]
         return path+ext
 
     for item in drive_list:
