@@ -66,6 +66,9 @@ def get_sorted(source_list:list[dict],drive_list:list[dict]) -> list[list[dict]]
     for item in drive_list:
         if item['Path'] not in drive_set_mod:
             if item["Path"] in drive_set2:
+
+                print(item['Path'])
+
                 lists = list(drive_set2[item['Path']])
                 drive_set_mod.add(lists.pop(-1))
                 drive_set.add(tuple(lists))
