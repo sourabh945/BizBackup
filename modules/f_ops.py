@@ -50,7 +50,7 @@ def get_sorted(source_list:list[dict],drive_list:list[dict]) -> list[list[dict]]
     drive_set = set() 
     drive_set2 = {}
     upload_dict = {}
-    drive_set_mod = {}
+    drive_set_mod = set()
 
     def without_time(string:str) -> str:
         path , ext = os.path.splitext(string)
