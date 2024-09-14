@@ -65,7 +65,7 @@ def get_sorted(source_list:list[dict],drive_list:list[dict]) -> list[list[dict]]
             if item["Path"] in drive_set2:
                 lists = list(drive_set2[item['Path']])
                 drive_set_mod.add(lists.pop(-1))
-                drive_set.add(lists)
+                drive_set.add(tuple(lists))
             else:
                 drive_set.add((item["Path"],item["Name"],item["Size"],item['ModTime'],item["IsDir"]))
 
