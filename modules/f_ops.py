@@ -34,7 +34,7 @@ def check_paths(path:str) -> None:
 
 def get_new_name(item:dict) -> dict:
     path , ext = os.path.splitext(item['Path'])
-    drive_path = f'{path}_({item['ModTime']}){ext}'
+    drive_path = f'{path}_({convert_to_utc(item['ModTime'])}){ext}'
     item['Drive_Path'] = drive_path
     return item
 
@@ -48,8 +48,9 @@ def get_sorted(source_list:list[dict],drive_list:list[dict]) -> list[list[dict]]
     upload_size , download_size , new_folders , modified_files = 0 , 0 , 0 , 0
 
     drive_set = set() 
-    drive_set2 = set()
+    drive_set2 = {}
     upload_dict = {}
+    drive_set_mod = {}
 
     def without_time(string:str) -> str:
         path , ext = os.path.splitext(string)
@@ -57,18 +58,23 @@ def get_sorted(source_list:list[dict],drive_list:list[dict]) -> list[list[dict]]
         return path+ext
 
     for item in drive_list:
-        drive_set.add((item["Path"],item["Name"],item["Size"],item['ModTime'],item["IsDir"]))
-        drive_set2.add((without_time(item["Path"]),without_time(item["Name"]),item["Size"],item['ModTime'],item["IsDir"]))
+        drive_set2[without_time(item['Path'])] = (without_time(item["Path"]),without_time(item["Name"]),item["Size"],item['ModTime'],item["IsDir"],item['Path'])
+
+    for item in drive_list:
+        if item['Path'] not in drive_set_mod:
+            if item["Path"] in drive_set2:
+                lists = list(drive_set2[item['Path']])
+                drive_set_mod.add(lists.pop(-1))
+                drive_set.add(lists)
+            else:
+                drive_set.add((item["Path"],item["Name"],item["Size"],item['ModTime'],item["IsDir"]))
 
     while source_list != [] : 
         item = source_list.pop(0)
         if item['IsDir'] is not True:
             time = convert_to_utc(item['ModTime'])
-            if (item["Path"],item["Name"],item["Size"],time,item["IsDir"]) in drive_set or (item["Path"],item["Name"],item["Size"],time,item["IsDir"]) in drive_set2:
-                try:
-                    drive_set.remove((item["Path"],item["Name"],item["Size"],time,item["IsDir"]))
-                except:
-                    pass
+            if (item["Path"],item["Name"],item["Size"],time,item["IsDir"]) in drive_set :
+                drive_set.remove((item["Path"],item["Name"],item["Size"],time,item["IsDir"]))
             else:
                 upload_dict[item['Path']] = item 
                 upload_size += item['Size']
