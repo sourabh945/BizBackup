@@ -58,14 +58,17 @@ def get_sorted(source_list:list[dict],drive_list:list[dict]) -> list[list[dict]]
 
     for item in drive_list:
         drive_set.add((item["Path"],item["Name"],item["Size"],item['ModTime'],item["IsDir"]))
-        drive_set2.add(without_time((item["Path"]),without_time(item["Name"]),item["Size"],item['ModTime'],item["IsDir"]))
+        drive_set2.add((without_time(item["Path"]),without_time(item["Name"]),item["Size"],item['ModTime'],item["IsDir"]))
 
     while source_list != [] : 
         item = source_list.pop(0)
         if item['IsDir'] is not True:
             time = convert_to_utc(item['ModTime'])
-            if (item["Path"],item["Name"],item["Size"],time,item["IsDir"]) in drive_set:
-                drive_set.remove((item["Path"],item["Name"],item["Size"],time,item["IsDir"]))
+            if (item["Path"],item["Name"],item["Size"],time,item["IsDir"]) in drive_set or (item["Path"],item["Name"],item["Size"],time,item["IsDir"]) in drive_set2:
+                try:
+                    drive_set.remove((item["Path"],item["Name"],item["Size"],time,item["IsDir"]))
+                except:
+                    pass
             else:
                 upload_dict[item['Path']] = item 
                 upload_size += item['Size']
