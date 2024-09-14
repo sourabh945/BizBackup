@@ -33,13 +33,10 @@ def check_paths(path:str) -> None:
 ### and this function the return the dict which have additional two key values drive_path and drive_name
 
 def get_new_name(item:dict) -> dict:
-    additional_string = f"_({(item['ModTime'])[0:list(item['ModTime']).index('.')]})"
-    drive_path = item['Path'][0:list(item['Path']).index('.')]+additional_string+item['Path'][list(item['Path']).index('.'):]
-    drive_name = item['Name'][0:list(item['Name']).index('.')]+additional_string+item['Name'][list(item['Name']).index('.'):]
+    path , ext = os.path.splitext(item['Path'])
+    drive_path = f'{path}_({item['ModTime']}){ext}'
     item['Drive_Path'] = drive_path
-    item['Drive_Name'] = drive_name
     return item
-
 
 ### this function do all the sorting for us
 
@@ -51,10 +48,17 @@ def get_sorted(source_list:list[dict],drive_list:list[dict]) -> list[list[dict]]
     upload_size , download_size , new_folders , modified_files = 0 , 0 , 0 , 0
 
     drive_set = set() 
+    drive_set2 = set()
     upload_dict = {}
+
+    def without_time(string:str) -> str:
+        path , ext = os.path.splitext(string)
+        path = path[0:len(path) - 22]
+        return path+ext
 
     for item in drive_list:
         drive_set.add((item["Path"],item["Name"],item["Size"],item['ModTime'],item["IsDir"]))
+        drive_set2.add(without_time((item["Path"]),without_time(item["Name"]),item["Size"],item['ModTime'],item["IsDir"]))
 
     while source_list != [] : 
         item = source_list.pop(0)
